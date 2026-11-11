@@ -296,6 +296,26 @@
   .sim-rows b{font-weight:700;text-align:right}
   .sim-note{font-size:12.5px;color:var(--muted);line-height:1.5;margin:14px 0 0}
   .sim-out .btn{width:100%;justify-content:center;margin-top:6px}
+  .sim-form select,.sim-form input[type=email],.sim-form input[type=tel]{width:100%;font:500 17px var(--sans);padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#faf9f7;color:var(--ink)}
+  .sim-form select{height:48px}
+  .sim-form select:focus{outline:2px solid var(--orange);outline-offset:1px;border-color:transparent}
+  .sim-step{position:relative}
+  .sim-step[hidden],#sim-intro[hidden],#sim-res[hidden]{display:none}
+  .sim-h{font:700 20px/1.25 var(--sans);letter-spacing:-.01em;margin:0 0 14px;color:var(--ink)}
+  #sim-s2 .sim-h{padding-left:44px}
+  .sim-bar{height:8px;border-radius:99px;background:#ebe7df;overflow:hidden}
+  .sim-bar i{display:block;height:100%;background:var(--orange);border-radius:99px;transition:width .4s}
+  .sim-etapa{font:600 12px var(--sans);color:var(--muted);margin:8px 0 18px}
+  .sim-back{position:absolute;left:0;top:-4px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:18px;cursor:pointer}
+  .sim-2col{display:grid;grid-template-columns:1fr 1.4fr;gap:12px}
+  .sim-lgpd{align-items:flex-start!important;font:500 13px/1.45 var(--sans)!important;color:var(--muted)}
+  .sim-lgpd input{flex:none;margin-top:2px}
+  .sim-err{color:#c0392b;font:600 13px var(--sans);min-height:18px;margin:6px 0 8px}
+  .sim-go{width:100%;justify-content:center}
+  .sim-list{margin:10px 0 0;padding:0;list-style:none}
+  .sim-list li{position:relative;padding:12px 0 12px 30px;border-bottom:1px solid var(--line);font-size:15px}
+  .sim-list li::before{content:"✓";position:absolute;left:0;top:11px;width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;font:700 12px/20px var(--sans);text-align:center}
+  .sim-redo{display:block;width:100%;margin-top:10px;background:none;border:0;color:var(--muted);font:600 14px var(--sans);text-decoration:underline;cursor:pointer;padding:8px}
   /* ---------- andamento da obra ---------- */
   .obra{display:grid;grid-template-columns:260px 1fr;gap:30px;align-items:center}
   @media (max-width:860px){ .obra{grid-template-columns:1fr} }
@@ -506,33 +526,78 @@
     <div class="reveal">
       <p class="kicker">04 · Simulador</p>
       <h2>Cabe no seu bolso?</h2>
-      <p class="sub">Uma estimativa rápida pelo Minha Casa Minha Vida. Informe a renda bruta da família, somando todos que vão compor a renda.</p>
+      <p class="sub">Simule seu financiamento pelo Minha Casa Minha Vida em duas etapas rápidas.</p>
     </div>
     <div class="sim reveal">
-      <form class="sim-form" id="sim-form" onsubmit="return false">
-        <div class="fld"><label for="sim-renda">Renda familiar bruta mensal</label>
-          <input type="text" id="sim-renda" inputmode="numeric" placeholder="R$ 4.000" autocomplete="off"></div>
-        <div class="fld"><label for="sim-valor">Valor do studio</label>
-          <input type="text" id="sim-valor" inputmode="numeric" autocomplete="off">
-          <small id="sim-valor-hint"></small></div>
-        <div class="fld"><label for="sim-fgts">FGTS ou recursos próprios (opcional)</label>
-          <input type="text" id="sim-fgts" inputmode="numeric" placeholder="R$ 0" autocomplete="off"></div>
-        <div class="fld" id="sim-bn-wrap"><label class="chk"><input type="checkbox" id="sim-bn" checked> Aplicar 10% OFF da Black November</label></div>
+      <form class="sim-form" id="sim-form" novalidate>
+        <div class="sim-step" id="sim-s1">
+          <h3 class="sim-h">Hora de dar o primeiro passo na conquista do seu imóvel</h3>
+          <div class="sim-bar"><i style="width:50%"></i></div>
+          <p class="sim-etapa">Etapa 1 de 2</p>
+          <div class="fld"><label for="sim-renda">Renda *</label>
+            <input type="text" id="sim-renda" inputmode="numeric" placeholder="R$ 0,00" autocomplete="off">
+            <small>Indique o valor da renda para a compra do imóvel, podendo ser individual ou conjunta com familiares ou amigos.</small></div>
+          <div class="fld"><label for="sim-nasc">Data de nascimento *</label>
+            <input type="text" id="sim-nasc" inputmode="numeric" placeholder="dd/mm/aaaa" autocomplete="bday"></div>
+          <div class="fld"><label for="sim-trab">Qual sua modalidade de trabalho? *</label>
+            <select id="sim-trab"><option value="">Selecione</option><option>Sou autônomo</option><option>Sou CLT</option><option>Sou motorista de app</option><option>Sou servidor público</option><option>Outros</option></select></div>
+          <div class="fld"><label for="sim-fgts">Valor do FGTS</label>
+            <input type="text" id="sim-fgts" inputmode="numeric" placeholder="R$ 0,00" autocomplete="off"></div>
+          <p class="sim-err" id="sim-err1" role="alert"></p>
+          <button type="button" class="btn sim-go" id="sim-next">Próximo passo</button>
+        </div>
+        <div class="sim-step" id="sim-s2" hidden>
+          <button type="button" class="sim-back" id="sim-back" aria-label="Voltar para a etapa 1">←</button>
+          <h3 class="sim-h">Quase lá! Precisamos de mais algumas informações</h3>
+          <div class="sim-bar"><i style="width:100%"></i></div>
+          <p class="sim-etapa">Etapa 2 de 2</p>
+          <div class="fld"><label for="sim-nome">Nome completo *</label>
+            <input type="text" id="sim-nome" placeholder="Nome" autocomplete="name"></div>
+          <div class="fld"><label for="sim-email">E-mail *</label>
+            <input type="email" id="sim-email" placeholder="nome@email.com" autocomplete="email"></div>
+          <div class="fld"><label for="sim-cel">Celular *</label>
+            <input type="tel" id="sim-cel" placeholder="(00) 00000-0000" autocomplete="tel-national"></div>
+          <div class="fld"><label for="sim-cpf">CPF</label>
+            <input type="text" id="sim-cpf" inputmode="numeric" placeholder="Digite o número do seu CPF" autocomplete="off"></div>
+          <div class="fld sim-2col">
+            <div><label for="sim-uf">Estado *</label>
+              <select id="sim-uf"><option value="">Selecione</option></select></div>
+            <div><label for="sim-cid">Cidade *</label>
+              <input type="text" id="sim-cid" placeholder="Sua cidade" autocomplete="address-level2"></div>
+          </div>
+          <label class="chk sim-lgpd"><input type="checkbox" id="sim-ok"> <span>Estou de acordo com a política de privacidade e aceito receber contatos (WhatsApp, SMS, e-mail, ligações) da Construfase e dos corretores parceiros.</span></label>
+          <p class="sim-err" id="sim-err2" role="alert"></p>
+          <button type="submit" class="btn sim-go">Ver resultado da simulação</button>
+        </div>
       </form>
       <div class="sim-out" id="sim-out" aria-live="polite">
-        <h3>Seu enquadramento</h3>
-        <span class="sim-faixa off" id="sim-faixa">Informe a renda</span>
-        <h3>Financiamento estimado</h3>
-        <p class="sim-big" id="sim-fin">—</p>
-        <div class="sim-rows">
-          <div><span>Parcela estimada</span><b id="sim-parc">—</b></div>
-          <div><span>Juros de referência da faixa</span><b id="sim-taxa">—</b></div>
-          <div><span>Valor do studio com desconto</span><b id="sim-vl">—</b></div>
-          <div><span>Entrada a compor</span><b id="sim-ent">—</b></div>
-          <div><span>Subsídio do governo</span><b id="sim-sub">—</b></div>
+        <div id="sim-intro">
+          <h3>Com a simulação você descobre</h3>
+          <ul class="sim-list">
+            <li>Em qual faixa do Minha Casa Minha Vida você se encaixa</li>
+            <li>Quanto pode financiar e o valor estimado da parcela</li>
+            <li>Se tem direito ao subsídio do governo, de até R$ 55 mil</li>
+            <li>Como usar o seu FGTS na entrada</li>
+          </ul>
+          <p class="sim-note">Leva menos de 1 minuto. Depois, um corretor confirma as condições com você.</p>
         </div>
-        <a class="btn js-wa" id="sim-wa" href="#" target="_blank" rel="noopener">Enviar minha simulação ao corretor</a>
-        <p class="sim-note">Simulação ilustrativa, sem valor de proposta. Considera parcela de até 30% da renda, prazo de até 420 meses, tabela Price, financiamento de até 80% do valor e as taxas de referência do Minha Casa Minha Vida (regras de abril/2026). Os valores reais dependem da análise de crédito e da avaliação da Caixa. O subsídio das Faixas 1 e 2 e o parcelamento da entrada são confirmados pelo corretor.</p>
+        <div id="sim-res" hidden>
+          <h3>Seu enquadramento</h3>
+          <span class="sim-faixa" id="sim-faixa"></span>
+          <h3>Financiamento estimado</h3>
+          <p class="sim-big" id="sim-fin">—</p>
+          <div class="sim-rows">
+            <div><span>Parcela estimada</span><b id="sim-parc">—</b></div>
+            <div><span>Prazo</span><b id="sim-prazo">—</b></div>
+            <div><span>Juros de referência da faixa</span><b id="sim-taxa">—</b></div>
+            <div><span>FGTS na entrada</span><b id="sim-fg">—</b></div>
+            <div><span>Entrada a compor</span><b id="sim-ent">—</b></div>
+            <div><span>Subsídio do governo</span><b id="sim-sub">—</b></div>
+          </div>
+          <a class="btn js-wa" id="sim-wa" href="#" target="_blank" rel="noopener">Falar com um corretor</a>
+          <button type="button" class="sim-redo" id="sim-redo">Refazer simulação</button>
+          <p class="sim-note" id="sim-note"></p>
+        </div>
       </div>
     </div>
   </div>
@@ -904,7 +969,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0xdfe6ec, 220, 520);
-const camera = new THREE.PerspectiveCamera(35, 1, 0.3, 1000);
+const camera = new THREE.PerspectiveCamera(35, 1, 1, 1000);
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0x9aa39a, 0.8));
 /* Orientação: -z = norte, +x = leste (conforme o Google Maps; confirmar na implantação). */
@@ -1278,11 +1343,11 @@ site.rotation.x = -Math.PI / 2; site.rotation.z = ROT; site.position.set(4, 0.02
 const ROADS = [];
 function road(a, b, w, label){
   const dx = b[0] - a[0], dz = b[1] - a[1], len = Math.hypot(dx, dz), ang = Math.atan2(dx, dz);
-  const s = new THREE.Mesh(new THREE.PlaneGeometry(w, len), new THREE.MeshLambertMaterial({color:0x5b5f65}));
-  s.rotation.x = -Math.PI / 2; s.rotation.z = ang; s.position.set((a[0] + b[0]) / 2, 0.03, (a[1] + b[1]) / 2);
+  const s = new THREE.Mesh(new THREE.PlaneGeometry(w, len), new THREE.MeshLambertMaterial({color:0x5b5f65, polygonOffset:true, polygonOffsetFactor:-4, polygonOffsetUnits:-4}));
+  s.rotation.x = -Math.PI / 2; s.rotation.z = ang; s.position.set((a[0] + b[0]) / 2, 0.16, (a[1] + b[1]) / 2);
   s.receiveShadow = true; scene.add(s);
-  const walk = new THREE.Mesh(new THREE.PlaneGeometry(w + 5, len), new THREE.MeshLambertMaterial({color:0xbdbab3}));
-  walk.rotation.copy(s.rotation); walk.position.set(s.position.x, 0.025, s.position.z); walk.receiveShadow = true; scene.add(walk);
+  const walk = new THREE.Mesh(new THREE.PlaneGeometry(w + 5, len), new THREE.MeshLambertMaterial({color:0xbdbab3, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2}));
+  walk.rotation.copy(s.rotation); walk.position.set(s.position.x, 0.08, s.position.z); walk.receiveShadow = true; scene.add(walk);
   ROADS.push({a, b, w:w / 2 + 3.5});
   if (label){
     const cv = document.createElement("canvas"); cv.width = 1024; cv.height = 128;
@@ -1290,7 +1355,7 @@ function road(a, b, w, label){
     cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(label, 512, 64);
     const t = new THREE.Mesh(new THREE.PlaneGeometry(34, 4.2), new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv), transparent:true, depthWrite:false}));
     t.rotation.x = -Math.PI / 2; t.rotation.z = ang + Math.PI / 2;
-    t.position.set(label.p[0], 0.06, label.p[1]); scene.add(t);
+    t.position.set(label.p[0], 0.24, label.p[1]); t.renderOrder = 2; scene.add(t);
   }
 }
 const L = (txt, x, z) => Object.assign(new String(txt), {p:[x, z]});
@@ -1394,7 +1459,7 @@ Object.entries(BATCH).forEach(([key, list]) => {
   cx.beginPath(); cx.arc(64, 64, 60, 0, 7); cx.fill();
   cx.fillStyle = "#fff"; cx.font = "bold 72px system-ui, sans-serif"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(t, 64, 68);
   const m = new THREE.Mesh(new THREE.PlaneGeometry(7, 7), new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv), transparent:true}));
-  m.rotation.x = -Math.PI / 2; m.position.set(x, 0.08, z); scene.add(m);
+  m.rotation.x = -Math.PI / 2; m.position.set(x, 0.26, z); m.renderOrder = 2; scene.add(m);
 });
 
 /* ---------- câmera ---------- */
@@ -1731,43 +1796,105 @@ form.addEventListener("submit", e => {
   close();
 });
 
-/* ---------- simulador MCMV ---------- */
+/* ---------- simulador MCMV (2 etapas, no padrão dos simuladores das grandes construtoras) ---------- */
 const $ = id => document.getElementById(id);
 const brl = v => "R$ " + Math.round(v).toLocaleString("pt-BR");
 const num = el => Number((el.value || "").replace(/\D/g, "")) || 0;
-function money(el){ el.addEventListener("input", () => { const v = num(el); el.value = v ? brl(v) : ""; calc(); }); }
-const vIn = $("sim-valor"); vIn.value = brl(SIM_VALOR_PADRAO); $("sim-valor-hint").textContent = SIM_HINT;
-[$("sim-renda"), vIn, $("sim-fgts")].forEach(money);
-$("sim-bn").addEventListener("change", calc);
-const promoOn = () => !document.getElementById("raspe").hidden;
-function calc(){
-  if (!promoOn()) { $("sim-bn-wrap").hidden = true; $("sim-bn").checked = false; }
-  const renda = num($("sim-renda")), valor = num(vIn), fgts = num($("sim-fgts"));
-  const vl = valor * ($("sim-bn").checked ? 0.9 : 1);
-  const fx = MCMV.find(f => renda > 0 && renda <= f.ate);
-  const tag = $("sim-faixa"), wa = $("sim-wa");
-  const set = (id, t) => $(id).textContent = t;
-  set("sim-vl", valor ? brl(vl) : "—");
-  if (!renda){ tag.className = "sim-faixa off"; tag.textContent = "Informe a renda";
-    ["sim-fin","sim-parc","sim-taxa","sim-ent","sim-sub"].forEach(i => set(i, "—")); return; }
-  if (!fx){ tag.className = "sim-faixa off"; tag.textContent = "Acima de R$ 13 mil: financiamento tradicional";
-    ["sim-fin","sim-parc","sim-taxa","sim-ent"].forEach(i => set(i, "consulte")); set("sim-sub", "não se aplica");
-    wa.dataset.msg = "Olá! Fiz a simulação no tour do Porto Studios. Minha renda familiar é de " + brl(renda) + " e quero ver as condições de financiamento.";
-    wa.href = "https://wa.me/" + window.TOUR_WHATSAPP + "?text=" + encodeURIComponent(wa.dataset.msg); return; }
-  tag.className = "sim-faixa"; tag.textContent = "MCMV · " + fx.nome;
-  const i = Math.pow(1 + fx.taxa / 100, 1 / 12) - 1, n = 420, k = (1 - Math.pow(1 + i, -n)) / i;
-  const fin = Math.max(0, Math.min(renda * 0.30 * k, vl * 0.8));
-  const parc = fin / k, ent = Math.max(0, vl - fin - fgts);
-  set("sim-fin", brl(fin)); set("sim-parc", brl(parc) + "/mês"); set("sim-taxa", fx.txt);
-  set("sim-ent", brl(ent) + (fgts ? " (já descontado o FGTS)" : ""));
-  set("sim-sub", fx.sub ? "até R$ 55 mil, conforme análise" : "não se aplica nesta faixa");
-  const acima = fx.teto && vl > fx.teto;
-  if (acima) set("sim-sub", "valor acima do teto da " + fx.nome);
-  const msg = "Olá! Fiz a simulação no tour do Porto Studios: renda familiar de " + brl(renda) + " (" + fx.nome + "), studio de " + brl(vl) +
-              ", financiamento estimado de " + brl(fin) + " e parcela de cerca de " + brl(parc) + ". Quero confirmar as condições.";
-  wa.href = "https://wa.me/" + window.TOUR_WHATSAPP + "?text=" + encodeURIComponent(msg);
+const cents = el => num(el) / 100;
+function moneyMask(el){ el.addEventListener("input", () => { const v = num(el); el.value = v ? "R$ " + (v / 100).toLocaleString("pt-BR", {minimumFractionDigits:2}) : ""; }); }
+moneyMask($("sim-renda")); moneyMask($("sim-fgts"));
+const mask = (el, f) => el.addEventListener("input", () => { el.value = f(el.value.replace(/\D/g, "")); });
+mask($("sim-nasc"), d => { d = d.slice(0, 8); return d.length > 4 ? d.slice(0,2) + "/" + d.slice(2,4) + "/" + d.slice(4) : d.length > 2 ? d.slice(0,2) + "/" + d.slice(2) : d; });
+mask($("sim-cel"), d => { d = d.slice(0, 11); return d.length > 6 ? "(" + d.slice(0,2) + ") " + d.slice(2, d.length - 4) + "-" + d.slice(-4) : d.length > 2 ? "(" + d.slice(0,2) + ") " + d.slice(2) : d; });
+mask($("sim-cpf"), d => { d = d.slice(0, 11); return d.replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2"); });
+const UFS = "AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO".split(" ");
+$("sim-uf").insertAdjacentHTML("beforeend", UFS.map(u => '<option' + (u === "SC" ? " selected" : "") + '>' + u + '</option>').join(""));
+const prev = store.get("ps_lead");
+if (prev){ if (prev.nome) $("sim-nome").value = prev.nome; if (prev.telefone){ $("sim-cel").value = prev.telefone; $("sim-cel").dispatchEvent(new Event("input")); } }
+function idade(txt){
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(txt); if (!m) return null;
+  const d = new Date(+m[3], +m[2] - 1, +m[1]); if (d.getDate() !== +m[1] || d.getMonth() !== +m[2] - 1) return null;
+  const now = new Date(); let a = now.getFullYear() - d.getFullYear();
+  if (now < new Date(now.getFullYear(), d.getMonth(), d.getDate())) a--;
+  return {anos:a, meses:(now - d) / (365.25 * 864e5) * 12};
 }
-calc();
+function cpfOk(c){
+  if (c.length !== 11 || /^(\d)\1+$/.test(c)) return false;
+  for (let t = 9; t < 11; t++){ let s = 0; for (let i = 0; i < t; i++) s += c[i] * (t + 1 - i); if (((s * 10) % 11) % 10 != c[t]) return false; }
+  return true;
+}
+let step1 = null;
+$("sim-next").addEventListener("click", () => {
+  const e = $("sim-err1"), renda = cents($("sim-renda")), id = idade($("sim-nasc").value);
+  if (!renda){ e.textContent = "Informe a renda."; $("sim-renda").focus(); return; }
+  if (!id){ e.textContent = "Informe a data de nascimento (dd/mm/aaaa)."; $("sim-nasc").focus(); return; }
+  if (id.anos < 18 || id.anos > 100){ e.textContent = "O financiamento é para maiores de 18 anos."; $("sim-nasc").focus(); return; }
+  if (!$("sim-trab").value){ e.textContent = "Selecione sua modalidade de trabalho."; $("sim-trab").focus(); return; }
+  e.textContent = "";
+  step1 = {renda, idade:id, trabalho:$("sim-trab").value.replace(/^Sou /, ""), fgts:cents($("sim-fgts"))};
+  $("sim-s1").hidden = true; $("sim-s2").hidden = false; $("sim-nome").focus();
+});
+$("sim-back").addEventListener("click", () => { $("sim-s2").hidden = true; $("sim-s1").hidden = false; });
+$("sim-form").addEventListener("submit", ev => {
+  ev.preventDefault();
+  const e = $("sim-err2"), n = $("sim-nome").value.trim(), em = $("sim-email").value.trim(),
+        cel = $("sim-cel").value.replace(/\D/g, ""), cpf = $("sim-cpf").value.replace(/\D/g, "");
+  if (n.split(/\s+/).length < 2){ e.textContent = "Informe seu nome completo."; $("sim-nome").focus(); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){ e.textContent = "Informe um e-mail válido."; $("sim-email").focus(); return; }
+  if (cel.length < 10){ e.textContent = "Informe o celular com DDD."; $("sim-cel").focus(); return; }
+  if (cpf && !cpfOk(cpf)){ e.textContent = "Confira o CPF ou deixe em branco."; $("sim-cpf").focus(); return; }
+  if (!$("sim-uf").value){ e.textContent = "Selecione o estado."; $("sim-uf").focus(); return; }
+  if ($("sim-cid").value.trim().length < 2){ e.textContent = "Informe a cidade."; $("sim-cid").focus(); return; }
+  if (!$("sim-ok").checked){ e.textContent = "Para ver o resultado, aceite a política de privacidade."; return; }
+  e.textContent = "";
+  const who = {nome:n, telefone:cel};
+  store.set("ps_lead", who);
+  const r = result(step1);
+  send(Object.assign({}, who, {evento:"simulação", email:em, cpf, estado:$("sim-uf").value, cidade:$("sim-cid").value.trim(),
+    renda:step1.renda, idade:step1.idade.anos, trabalho:step1.trabalho, fgts:step1.fgts,
+    faixa:r.faixa, financiamento:Math.round(r.fin || 0), parcela:Math.round(r.parc || 0), origem:"Simulador"}, base()));
+  show(r);
+  $("sim-out").scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+$("sim-redo").addEventListener("click", () => {
+  $("sim-res").hidden = true; $("sim-intro").hidden = false; $("sim-s2").hidden = true; $("sim-s1").hidden = false;
+  $("sim-form").scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+const promoOn = () => !document.getElementById("raspe").hidden;
+function result(d){
+  const desc = promoOn() ? 0.9 : 1, vl = SIM_VALOR_PADRAO * desc;
+  const fx = MCMV.find(f => d.renda <= f.ate);
+  /* regra da Caixa: idade + prazo até 80 anos e 6 meses; prazo máximo de 420 meses */
+  const n = Math.max(0, Math.min(420, Math.floor(80.5 * 12 - d.idade.meses)));
+  if (!fx || n < 12) return {fx, vl, desc, n, faixa:fx ? fx.nome : "acima do MCMV"};
+  const i = Math.pow(1 + fx.taxa / 100, 1 / 12) - 1, k = (1 - Math.pow(1 + i, -n)) / i;
+  const cap = d.renda * 0.30 * k >= vl * 0.8, fin = Math.max(0, Math.min(d.renda * 0.30 * k, vl * 0.8));
+  return {fx, vl, desc, n, fin, cap, parc:fin / k, ent:Math.max(0, vl - fin - d.fgts), faixa:fx.nome};
+}
+function show(r){
+  const set = (id, t) => $(id).textContent = t, tag = $("sim-faixa");
+  set("sim-fg", step1.fgts ? brl(step1.fgts) : "não informado");
+  if (!r.fx){
+    tag.className = "sim-faixa off"; tag.textContent = "Acima de R$ 13 mil: financiamento tradicional";
+    ["sim-parc","sim-prazo","sim-taxa","sim-ent"].forEach(x => set(x, "com o corretor")); set("sim-fin", "Fale com um corretor"); set("sim-sub", "não se aplica");
+  } else if (r.n < 12){
+    tag.className = "sim-faixa off"; tag.textContent = "MCMV · " + r.fx.nome;
+    ["sim-parc","sim-prazo","sim-taxa","sim-ent"].forEach(x => set(x, "com o corretor")); set("sim-fin", "Fale com um corretor"); set("sim-sub", "conforme análise");
+  } else {
+    tag.className = "sim-faixa"; tag.textContent = "MCMV · " + r.fx.nome;
+    /* sem preço na tela: quando o teto de 80% limita, não mostra o número (ele revelaria o valor do studio) */
+    set("sim-fin", r.cap ? "até 80% do valor" : brl(r.fin)); set("sim-parc", brl(r.parc) + "/mês"); set("sim-taxa", r.fx.txt);
+    set("sim-prazo", r.n + " meses" + (r.n < 420 ? " (limitado pela idade)" : ""));
+    set("sim-ent", "o corretor monta com você");
+    set("sim-sub", r.fx.teto && r.vl > r.fx.teto ? "valor acima do teto da " + r.fx.nome : r.fx.sub ? "até R$ 55 mil, conforme análise" : "não se aplica nesta faixa");
+  }
+  set("sim-note", "Simulação ilustrativa, sem valor de proposta, feita com o studio de menor valor da tabela de novembro/2026. Considera parcela de até 30% da renda, " +
+      "financiamento de até 80% do valor, tabela Price, prazo de até 420 meses (idade + prazo até 80 anos e 6 meses) e as taxas de referência do Minha Casa Minha Vida. " +
+      "Os valores reais dependem da análise de crédito e da avaliação da Caixa; o subsídio das Faixas 1 e 2 e o parcelamento da entrada são confirmados pelo corretor.");
+  /* a mensagem do WhatsApp não leva valores: o corretor recebe a simulação completa no cadastro */
+  $("sim-wa").href = "https://wa.me/" + window.TOUR_WHATSAPP + "?text=" + encodeURIComponent("Olá! Fiz a simulação de financiamento no tour do Porto Studios e quero falar com um corretor.");
+  $("sim-intro").hidden = true; $("sim-res").hidden = false;
+}
 
 /* ---------- andamento da obra ---------- */
 $("obra-sub").textContent = "Acompanhe pelo voo de drone mensal da Construfase. Entrega prevista para " + OBRA.entrega + ".";
